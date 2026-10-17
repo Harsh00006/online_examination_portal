@@ -28,9 +28,10 @@
     <a href="#">My Results</a>
     <br><br>
 
-    <a href="#">Exam History</a>
-    <br><br>
-
+    <a href="<%= request.getContextPath() %>/history">
+    Exam History
+</a>
+    
     <a href="http://localhost:8080/OnlineExamPortal/login.jsp">Logout</a>
 
 </body>

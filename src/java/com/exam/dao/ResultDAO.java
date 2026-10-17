@@ -5,6 +5,10 @@ import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import com.exam.model.Result;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ResultDAO {
 
     public int saveResult(int userId,
@@ -108,5 +112,80 @@ public class ResultDAO {
         e.printStackTrace();
         return false;
     }
+}
+    public List<Result> getResultsByUserId(int userId) {
+
+    List<Result> results = new ArrayList<>();
+
+    String sql = "SELECT r.result_id, r.user_id, r.exam_id, "
+               + "e.title AS exam_title, "
+               + "r.score, r.correct_answer, "
+               + "r.wrong_answers, r.submitted_at "
+               + "FROM results r "
+               + "JOIN exams e ON r.exam_id = e.exam_id "
+               + "WHERE r.user_id = ? "
+               + "ORDER BY r.submitted_at DESC";
+
+    try {
+
+        Connection connection =
+                DBConnection.getConnection();
+
+        PreparedStatement preparedStatement =
+                connection.prepareStatement(sql);
+
+        preparedStatement.setInt(1, userId);
+
+        ResultSet resultSet =
+                preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+
+            Result result = new Result();
+
+            result.setResultId(
+                    resultSet.getInt("result_id")
+            );
+
+            result.setUserId(
+                    resultSet.getInt("user_id")
+            );
+
+            result.setExamId(
+                    resultSet.getInt("exam_id")
+            );
+
+            result.setExamTitle(
+                    resultSet.getString("exam_title")
+            );
+
+            result.setScore(
+                    resultSet.getInt("score")
+            );
+
+            result.setCorrectAnswers(
+                    resultSet.getInt("correct_answer")
+            );
+
+            result.setWrongAnswers(
+                    resultSet.getInt("wrong_answers")
+            );
+
+            result.setSubmittedAt(
+                    resultSet.getString("submitted_at")
+            );
+
+            results.add(result);
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return results;
 }
 }
