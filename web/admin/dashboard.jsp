@@ -1,17 +1,49 @@
-<%-- 
-    Document   : dashboard
-    Created on : 20-Sep-2026, 12:18:11 pm
-    Author     : harsh
---%>
 
+<%@page import="com.exam.model.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%
+    User admin = (User) session.getAttribute("user");
+
+    if (admin == null ||
+        !"ADMIN".equalsIgnoreCase(admin.getRole())) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+%>
+
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+
+<body>
+
+    <h1>Online Examination Portal - Admin Dashboard</h1>
+
+    <h2>Welcome, <%= admin.getName() %>!</h2>
+
+    <h3>Management</h3>
+
+    <ul>
+        <li>
+            <a href="<%= request.getContextPath() %>/admin/exams">
+                Manage Exams
+            </a>
+        </li>
+
+        <li>
+            <a href="<%= request.getContextPath() %>/admin/results.jsp">
+                View Results
+            </a>
+        </li>
+    </ul>
+
+    <a href="<%= request.getContextPath() %>/logout">
+        Logout
+    </a>
+
+</body>
 </html>

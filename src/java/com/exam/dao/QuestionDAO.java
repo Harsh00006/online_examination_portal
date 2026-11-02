@@ -118,4 +118,29 @@ public class QuestionDAO {
         return false;
     }
 }
+    
+public boolean addQuestion(java.sql.Connection connection,
+                           Question question) throws java.sql.SQLException {
+
+    String sql = "INSERT INTO questions "
+               + "(exam_id, question_text, option_a, option_b, "
+               + "option_c, option_d, correct_option, marks) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    try (java.sql.PreparedStatement statement =
+             connection.prepareStatement(sql)) {
+
+        statement.setInt(1, question.getExamId());
+        statement.setString(2, question.getQuestionText());
+        statement.setString(3, question.getOptionA());
+        statement.setString(4, question.getOptionB());
+        statement.setString(5, question.getOptionC());
+        statement.setString(6, question.getOptionD());
+        statement.setString(7, question.getCorrectOption());
+        statement.setInt(8, question.getMarks());
+
+        return statement.executeUpdate() > 0;
+    }
+}
+
 }

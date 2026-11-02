@@ -3,6 +3,8 @@ package com.exam.controller;
 import com.exam.dao.QuestionDAO;
 import com.exam.model.Question;
 
+import com.exam.model.User;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -18,6 +20,20 @@ public class QuestionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
                            HttpServletResponse response)
             throws ServletException, IOException {
+        
+        HttpSession session = request.getSession(false);
+
+if (session == null
+        || !(session.getAttribute("user") instanceof User)
+        || !"ADMIN".equalsIgnoreCase(
+            ((User) session.getAttribute("user")).getRole())) {
+
+    response.sendError(
+        HttpServletResponse.SC_FORBIDDEN,
+        "Admin access required"
+    );
+    return;
+}
 
         int examId = Integer.parseInt(
                 request.getParameter("examId")
@@ -62,13 +78,15 @@ public class QuestionServlet extends HttpServlet {
                 questionDAO.addQuestion(question);
 
         if (result) {
-            response.getWriter().println(
-                    "Question added successfully!"
-            );
+        response.sendRedirect(
+        request.getContextPath()
+        + "/admin/manage-questions?examId=" + examId
+        );
         } else {
+            response.setContentType("text/html;charset=UTF-8");
             response.getWriter().println(
-                    "Failed to add question!"
-            );
+                "Failed to add question!"
+        );
         }
     }
 }

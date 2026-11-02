@@ -38,11 +38,16 @@ public class ExamServlet extends HttpServlet {
 
         boolean result = examDAO.addExam(exam);
 
-        if (result) {
-            response.getWriter().println("<h1>Exam added successfully!</h1>");
-        } else {
-            response.getWriter().println("<h1>Failed to add exam!</h1>");
-        }
+       
+if (result) {
+    response.sendRedirect(
+        request.getContextPath() + "/admin/exams"
+    );
+} else {
+    response.setContentType("text/html;charset=UTF-8");
+    response.getWriter().println("<h1>Failed to add exam!</h1>");
+}
+
     }
     
     private ExamDAO examDAO;

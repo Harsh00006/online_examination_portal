@@ -41,6 +41,42 @@ public class ExamDAO {
             return false;
         }
     }
+    
+public int addExamAndGetId(Exam exam) {
+
+    String sql = "INSERT INTO exams "
+               + "(title, description, duration_minutes, total_marks) "
+               + "VALUES (?, ?, ?, ?)";
+
+    try (Connection connection = DBConnection.getConnection();
+         PreparedStatement preparedStatement =
+                 connection.prepareStatement(
+                     sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+        preparedStatement.setString(1, exam.getTitle());
+        preparedStatement.setString(2, exam.getDescription());
+        preparedStatement.setInt(3, exam.getDurationMinutes());
+        preparedStatement.setInt(4, exam.getTotalMarks());
+
+        int rowsInserted = preparedStatement.executeUpdate();
+
+        if (rowsInserted > 0) {
+            try (ResultSet resultSet =
+                     preparedStatement.getGeneratedKeys()) {
+
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return -1;
+}
+
    public List<Exam> getAllExams() {
 
     List<Exam> exams = new ArrayList<>();

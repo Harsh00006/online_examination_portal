@@ -1,78 +1,101 @@
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Question</title>
+    <meta charset="UTF-8">
+    <title>Manage Exams</title>
 </head>
-
 <body>
 
-    <h2>Add Question</h2>
+    <h1>Manage Exams</h1>
 
-    <form action="<%= request.getContextPath() %>/add-question"
-          method="post">
+    <h2>Create Exam</h2>
 
-        <label>Exam ID:</label>
-        <input type="number" name="examId" required>
+    <form action="<%= request.getContextPath() %>/exam" method="post">
 
+        <label>Exam Title:</label>
+        <input type="text" name="title" required>
         <br><br>
 
-        <label>Question:</label>
-        <br>
-        <textarea name="questionText"
-                  rows="4"
-                  cols="50"
-                  required></textarea>
-
+        <label>Description:</label>
+        <textarea name="description" rows="4" required></textarea>
         <br><br>
 
-        <label>Option A:</label>
-        <input type="text" name="optionA" required>
-
+        <label>Duration (minutes):</label>
+        <input type="number" name="duration" min="1" required>
         <br><br>
 
-        <label>Option B:</label>
-        <input type="text" name="optionB" required>
-
+        <label>Total Marks:</label>
+        <input type="number" name="totalMarks" min="1" required>
         <br><br>
 
-        <label>Option C:</label>
-        <input type="text" name="optionC" required>
-
-        <br><br>
-
-        <label>Option D:</label>
-        <input type="text" name="optionD" required>
-
-        <br><br>
-
-        <label>Correct Option:</label>
-
-        <select name="correctOption" required>
-            <option value="">-- Select Correct Option --</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-        </select>
-
-        <br><br>
-
-        <label>Marks:</label>
-        <input type="number"
-               name="marks"
-               value="1"
-               min="1"
-               required>
-
-        <br><br>
-
-        <button type="submit">Add Question</button>
+        <button type="submit">Create Exam</button>
 
     </form>
 
-    <br>
+    <hr>
 
-    <a href="dashboard.jsp">Back to Dashboard</a>
+   
+<%@page import="java.util.List"%>
+<%@page import="com.exam.model.Exam"%>
+
+<h2>Existing Exams</h2>
+
+<%
+    List<Exam> exams =
+        (List<Exam>) request.getAttribute("exams");
+
+    if (exams != null && !exams.isEmpty()) {
+%>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Exam ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Duration (Minutes)</th>
+        <th>Total Marks</th>
+        <th>Actions</th>
+    </tr>
+
+    <%
+        for (Exam exam : exams) {
+    %>
+
+    <tr>
+        <td><%= exam.getExamId() %></td>
+        <td><%= exam.getTitle() %></td>
+        <td><%= exam.getDescription() %></td>
+        <td><%= exam.getDurationMinutes() %></td>
+        <td><%= exam.getTotalMarks() %></td>
+        <td>
+            <a href="<%= request.getContextPath() %>/admin/manage-questions?examId=<%= exam.getExamId() %>">
+                Manage Questions
+            </a>
+        </td>
+    </tr>
+
+    <%
+        }
+    %>
+</table>
+
+<%
+    } else {
+%>
+
+<p>No exams found.</p>
+
+<%
+    }
+%>
+
+    <p>
+        <a href="<%= request.getContextPath() %>/admin/dashboard.jsp">
+            Back to Dashboard
+        </a>
+    </p>
 
 </body>
 </html>
