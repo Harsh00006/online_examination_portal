@@ -16,6 +16,9 @@ import com.exam.dao.ResultDAO;
 import com.exam.model.User;
 import javax.servlet.http.HttpSession;
 
+import com.exam.dao.ExamAttemptDAO;
+import com.exam.model.ExamAttempt;
+
 @WebServlet("/submit-exam")
 public class SubmitExamServlet extends HttpServlet {
 
@@ -24,10 +27,64 @@ public class SubmitExamServlet extends HttpServlet {
                            HttpServletResponse response)
             throws ServletException, IOException {
         System.out.println("========== SUBMIT EXAM SERVLET CALLED ==========");
-        // Get exam ID
-        int examId = Integer.parseInt(
-                request.getParameter("examId")
-        );
+        // Step 1: Validate logged-in student
+        HttpSession session = request.getSession(false);
+
+if (session == null ||
+        !(session.getAttribute("user") instanceof User)) {
+
+    response.sendRedirect(request.getContextPath() + "/login.jsp");
+    return;
+}
+
+User user = (User) session.getAttribute("user");
+
+if (!"STUDENT".equalsIgnoreCase(user.getRole())) {
+    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+    return;
+}
+
+// Step 2: Validate exam ID
+int examId;
+
+try {
+    examId = Integer.parseInt(request.getParameter("examId"));
+} catch (NumberFormatException e) {
+    response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            "Invalid exam ID"
+    );
+    return;
+}
+
+// Step 3: Find student's existing attempt
+ExamAttemptDAO attemptDAO = new ExamAttemptDAO();
+
+ExamAttempt attempt = attemptDAO.getAttempt(
+        user.getUserId(),
+        examId
+);
+
+if (attempt == null ||
+        !"IN_PROGRESS".equals(attempt.getStatus())) {
+
+    response.sendError(
+            HttpServletResponse.SC_FORBIDDEN,
+            "No active exam attempt found"
+    );
+    return;
+}
+
+// Step 4: Claim attempt before saving result
+if (!attemptDAO.claimAttempt(attempt.getAttemptId())) {
+
+    response.sendError(
+            HttpServletResponse.SC_FORBIDDEN,
+            "Exam already submitted or time expired"
+    );
+    return;
+}
+
 
         // Get all questions of this exam
         QuestionDAO questionDAO = new QuestionDAO();
@@ -64,10 +121,6 @@ public class SubmitExamServlet extends HttpServlet {
             }
         }
         
-        HttpSession session = request.getSession(false);
-
-User user = (User) session.getAttribute("user");
-
 int userId = user.getUserId();
 
 ResultDAO resultDAO = new ResultDAO();
@@ -81,6 +134,21 @@ int resultId = resultDAO.saveResult(
 );
 
 System.out.println("Generated Result ID: " + resultId);
+
+// If result was not saved, allow the attempt to be retried
+if (resultId <= 0) {
+
+    attemptDAO.updateStatus(
+            attempt.getAttemptId(),
+            "IN_PROGRESS"
+    );
+
+    response.sendError(
+            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+            "Unable to save exam result"
+    );
+    return;
+}
 
 for (Question question : questions) {
 

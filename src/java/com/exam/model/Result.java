@@ -10,6 +10,8 @@ public class Result {
     private int correctAnswers;
     private int wrongAnswers;
     private String submittedAt;
+    private String studentName;
+    private String studentEmail;
 
     public Result() {
     }
@@ -95,5 +97,20 @@ public class Result {
 
     public void setSubmittedAt(String submittedAt) {
         this.submittedAt = submittedAt;
+    }
+    public String getStudentName() {
+    return studentName;
+}
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public String getStudentEmail() {
+        return studentEmail;
+    }
+
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
     }
 }

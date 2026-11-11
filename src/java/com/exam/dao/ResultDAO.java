@@ -188,4 +188,61 @@ public class ResultDAO {
 
     return results;
 }
+    public List<Result> getAllResults() {
+
+    List<Result> results = new ArrayList<>();
+
+    String sql = "SELECT r.result_id, r.user_id, r.exam_id, "
+               + "u.name AS student_name, "
+               + "u.email AS student_email, "
+               + "e.title AS exam_title, "
+               + "r.score, r.correct_answer, "
+               + "r.wrong_answers, r.submitted_at "
+               + "FROM results r "
+               + "JOIN users u ON r.user_id = u.user_id "
+               + "JOIN exams e ON r.exam_id = e.exam_id "
+               + "ORDER BY r.submitted_at DESC";
+
+    try (Connection connection = DBConnection.getConnection();
+         PreparedStatement preparedStatement =
+                 connection.prepareStatement(sql);
+         ResultSet resultSet = preparedStatement.executeQuery()) {
+
+        while (resultSet.next()) {
+
+            Result result = new Result();
+
+            result.setResultId(resultSet.getInt("result_id"));
+            result.setUserId(resultSet.getInt("user_id"));
+            result.setExamId(resultSet.getInt("exam_id"));
+
+            result.setStudentName(
+                    resultSet.getString("student_name"));
+
+            result.setStudentEmail(
+                    resultSet.getString("student_email"));
+
+            result.setExamTitle(
+                    resultSet.getString("exam_title"));
+
+            result.setScore(resultSet.getInt("score"));
+
+            result.setCorrectAnswers(
+                    resultSet.getInt("correct_answer"));
+
+            result.setWrongAnswers(
+                    resultSet.getInt("wrong_answers"));
+
+            result.setSubmittedAt(
+                    resultSet.getString("submitted_at"));
+
+            results.add(result);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return results;
+}
 }   

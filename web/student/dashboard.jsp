@@ -25,9 +25,6 @@
     <a href="../exams">Available Exams</a>
     <br><br>
 
-    <a href="#">My Results</a>
-    <br><br>
-
     <a href="<%= request.getContextPath() %>/history">
     Exam History
 </a>

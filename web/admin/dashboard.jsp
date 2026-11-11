@@ -35,9 +35,9 @@
         </li>
 
         <li>
-            <a href="<%= request.getContextPath() %>/admin/results.jsp">
-                View Results
-            </a>
+                <a href="<%= request.getContextPath() %>/admin/results">
+        View Results
+    </a>
         </li>
     </ul>
 

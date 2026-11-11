@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student Login</title>
+    <title>User Login</title>
 </head>
 
 <body>
 
-    <h2>Student Login</h2>
+    <h2>User Login</h2>
 
     <form action="login" method="post">
 

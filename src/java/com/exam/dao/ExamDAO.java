@@ -77,6 +77,42 @@ public int addExamAndGetId(Exam exam) {
     return -1;
 }
 
+public Exam getExamById(int examId) {
+
+    String sql = "SELECT * FROM exams WHERE exam_id = ?";
+
+    try (Connection connection = DBConnection.getConnection();
+         PreparedStatement preparedStatement =
+                 connection.prepareStatement(sql)) {
+
+        preparedStatement.setInt(1, examId);
+
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            if (resultSet.next()) {
+
+                Exam exam = new Exam();
+
+                exam.setExamId(resultSet.getInt("exam_id"));
+                exam.setTitle(resultSet.getString("title"));
+                exam.setDescription(resultSet.getString("description"));
+
+                exam.setDurationMinutes(
+                        resultSet.getInt("duration_minutes"));
+
+                exam.setTotalMarks(
+                        resultSet.getInt("total_marks"));
+
+                return exam;
+            }
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
    public List<Exam> getAllExams() {
 
     List<Exam> exams = new ArrayList<>();
